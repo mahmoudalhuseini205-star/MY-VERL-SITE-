@@ -1,0 +1,980 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+/* ---- Brand + theme tokens (DESIGN.md §2) ---- */
+:root {
+  --ink: #0b0c10;
+  --titanium: #1f2833;
+  --sand: #dfd6c2;
+  --ember: #d97d54;
+
+  --bg: var(--sand);
+  --surface: color-mix(in srgb, var(--sand) 82%, #ffffff);
+  --surface-inverse: var(--titanium);
+  --text: var(--ink);
+  --text-muted: rgba(11, 12, 16, 0.64);
+  --border: rgba(11, 12, 16, 0.12);
+  --accent: var(--ember); /* fill only on light */
+  --on-accent: var(--ink);
+  --accent-fg: var(--text); /* Ember Rule: never Ember text on Sand */
+  --focus: var(--text);
+  --grain: 0.035;
+  --card-shadow: 0 24px 48px -24px rgba(11, 12, 16, 0.25);
+
+  /* Canvas grid reads these as "r g b" so it can set its own alpha (DESIGN.md §4, Blueprint grid). */
+  --grid-rgb: 11 12 16;
+  --ember-rgb: 217 125 84;
+
+  /* Faceted V mark: three tones mixed from the brand colors only. */
+  --v-outer: var(--ink);
+  --v-top: var(--titanium);
+  --v-inner: color-mix(in srgb, var(--titanium) 82%, var(--sand));
+  --v-light: var(--sand);
+
+  --ease-expo: cubic-bezier(0.22, 1, 0.36, 1);
+  --dur-micro: 180ms;
+  --dur-element: 600ms;
+  --dur-section: 900ms;
+  --intro-delay: 0s; /* set to the intro length on a first visit (BrandIntro) */
+
+  color-scheme: light;
+}
+
+[data-theme="dark"] {
+  --bg: var(--ink);
+  --surface: var(--titanium);
+  --surface-inverse: var(--sand);
+  --text: var(--sand);
+  --text-muted: rgba(223, 214, 194, 0.64);
+  --border: rgba(223, 214, 194, 0.12);
+  --accent-fg: var(--ember);
+  --focus: var(--ember);
+  --grain: 0.05;
+  --card-shadow: none;
+
+  --grid-rgb: 223 214 194;
+  --v-outer: color-mix(in srgb, var(--titanium) 84%, var(--sand));
+  --v-top: color-mix(in srgb, var(--titanium) 68%, var(--sand));
+  --v-inner: color-mix(in srgb, var(--titanium) 55%, var(--sand));
+
+  color-scheme: dark;
+}
+
+/* A section forced light inside a dark page (the Home hero photo): light tokens again. */
+[data-theme="dark"] [data-theme="light"] {
+  --bg: var(--sand);
+  --surface: color-mix(in srgb, var(--sand) 82%, #ffffff);
+  --surface-inverse: var(--titanium);
+  --text: var(--ink);
+  --text-muted: rgba(11, 12, 16, 0.64);
+  --border: rgba(11, 12, 16, 0.12);
+  --accent-fg: var(--text);
+  --focus: var(--text);
+  --card-shadow: 0 24px 48px -24px rgba(11, 12, 16, 0.25);
+  --grid-rgb: 11 12 16;
+  color-scheme: light;
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-inverse: var(--surface-inverse);
+  --color-text: var(--text);
+  --color-muted: var(--text-muted);
+  --color-border: var(--border);
+  --color-accent: var(--accent);
+  --color-on-accent: var(--on-accent);
+  --color-accent-fg: var(--accent-fg);
+  --font-sans: var(--font-brand);
+  --font-mono: var(--font-brand-mono);
+  --ease-expo: var(--ease-expo);
+}
+
+/* ---- Type scale (DESIGN.md §3) ---- */
+@utility t-display {
+  font-size: clamp(2.75rem, 6vw, 5.5rem);
+  font-weight: 500;
+  letter-spacing: -0.035em;
+  line-height: 1;
+}
+@utility t-h1 {
+  font-size: clamp(2.25rem, 4.5vw, 4rem);
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+}
+@utility t-h2 {
+  font-size: clamp(1.75rem, 3vw, 2.75rem);
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+@utility t-h3 {
+  font-size: 1.375rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1.25;
+}
+@utility t-body-l {
+  font-size: 1.1875rem;
+  font-weight: 400;
+  line-height: 1.6;
+  max-width: 65ch;
+}
+@utility t-body {
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.65;
+  max-width: 65ch;
+}
+@utility t-label {
+  font-family: var(--font-brand-mono);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  line-height: 1.4;
+  text-transform: uppercase;
+}
+@utility t-metric {
+  font-family: var(--font-brand-mono);
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  font-weight: 500;
+  letter-spacing: -0.04em;
+  line-height: 1;
+}
+
+/* ---- Layout (DESIGN.md §5) ---- */
+@utility container-site {
+  width: 100%;
+  max-width: 1360px;
+  margin-inline: auto;
+  padding-inline: clamp(1rem, 4vw, 3rem);
+}
+
+@utility section-y {
+  padding-block: clamp(5rem, 12vw, 10rem);
+}
+
+/* Card (DESIGN.md §4): only where elevation means hierarchy. */
+@utility card {
+  border-radius: 24px;
+  border: 1px solid var(--border);
+  background-color: var(--surface);
+  box-shadow: var(--card-shadow);
+}
+
+/* Engineering grid drawn in CSS: placeholders, CTA block, inner page heroes. */
+@utility blueprint-bg {
+  background-image:
+    linear-gradient(var(--border) 1px, transparent 1px), linear-gradient(90deg, var(--border) 1px, transparent 1px),
+    linear-gradient(color-mix(in srgb, var(--border) 50%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in srgb, var(--border) 50%, transparent) 1px, transparent 1px);
+  background-size:
+    96px 96px,
+    96px 96px,
+    24px 24px,
+    24px 24px;
+  background-position: -1px -1px;
+}
+
+/* ---- Arabic (RTL) ----
+   Letter-spacing breaks the joins between Arabic letters, and Arabic needs more leading than the Latin
+   display sizes. Unlayered, so it wins over the utilities; LTR islands (the wordmark, phone) keep theirs. */
+[dir="rtl"] *:not(:where([dir="ltr"], [dir="ltr"] *)) {
+  letter-spacing: 0;
+}
+[dir="rtl"] :is(.t-display, .t-h1, .t-h2, .t-h3) {
+  line-height: 1.35;
+}
+/* Arabic face first: the Latin fonts' Arial fallback would otherwise catch the Arabic glyphs. Its
+   unicode-range covers Arabic only, so Latin words and digits still fall through to the brand fonts. */
+[dir="rtl"] body,
+[dir="rtl"] .font-sans {
+  font-family: var(--font-arabic), var(--font-brand), sans-serif;
+}
+[dir="rtl"] :is(.t-label, .t-metric, .font-mono) {
+  font-family: var(--font-arabic), var(--font-brand-mono), monospace;
+}
+
+/* ---- Base ---- */
+html {
+  scroll-padding-top: 5rem;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-brand), sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 3px;
+}
+
+/* Grain overlay (DESIGN.md §6, effect 11): fixed, never scrolls */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  pointer-events: none;
+  opacity: var(--grain);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* Lenis (desktop only) */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+/* Line-mask reveal (DESIGN.md §6, effect 2). Pure CSS so text paints without JS. */
+.line-mask > span {
+  display: block;
+  overflow: hidden;
+  padding-bottom: 0.08em; /* keep descenders (ğ, ş, ç) inside the clip */
+}
+.line-mask > span > span {
+  display: block;
+  animation: line-up var(--dur-section) var(--ease-expo) both;
+  animation-delay: calc(var(--intro-delay) + var(--i) * 80ms);
+}
+/* Mobile: lines flow as normal text (no orphaned words) and fade in instead (DESIGN.md §7). */
+@media (max-width: 767px) {
+  .line-mask > span,
+  .line-mask > span > span {
+    display: inline;
+    overflow: visible;
+    padding: 0;
+  }
+  .line-mask > span > span {
+    animation-name: fade-in;
+  }
+}
+/* Hero supporting copy follows the headline in: eyebrow, sub-line, CTA. Pure CSS, no JS wait. */
+.rise {
+  animation: rise var(--dur-element) var(--ease-expo) both;
+  animation-delay: calc(var(--intro-delay) + var(--d, 0s));
+}
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+}
+@keyframes line-up {
+  from {
+    transform: translateY(110%);
+  }
+}
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+/* Inverse chapter block (Work): Titanium on the light page, Sand on the dark page (DESIGN.md §2, §5). */
+.block-inverse {
+  --bg: var(--titanium);
+  --surface: color-mix(in srgb, var(--titanium) 70%, var(--ink));
+  --text: var(--sand);
+  --text-muted: rgba(223, 214, 194, 0.64);
+  --border: rgba(223, 214, 194, 0.12);
+  --accent-fg: var(--ember);
+  --focus: var(--ember);
+  --card-shadow: none;
+  background: var(--bg);
+  color: var(--text);
+}
+[data-theme="dark"] .block-inverse {
+  --bg: var(--sand);
+  --surface: color-mix(in srgb, var(--sand) 82%, #ffffff);
+  --text: var(--ink);
+  --text-muted: rgba(11, 12, 16, 0.64);
+  --border: rgba(11, 12, 16, 0.12);
+  --accent-fg: var(--ink); /* Ember Rule: never Ember text on Sand */
+  --focus: var(--ink);
+}
+
+/* ---- Home hero: "The monument" (DESIGN.md §4, §6) ----
+   The section is a size container; each .hero-frame is a box with the plate's aspect that covers it,
+   anchored to the bottom so the horizon never moves. Positions inside a frame are fractions of the photo:
+   --hz horizon, --vx the V's base centre, --vh the V's height. Plate and V share translate and pivot
+   (the V's contact point) and differ only in scale, so the V never leaves the ground. */
+.hero {
+  --ar: 1080 / 1400;
+  --hz: 0.873;
+  --vx: 0.66;
+  --vh: 0.17;
+  --cx: 0.62; /* share of the overflow cropped from the left */
+  --p: 0;
+  --mx: 0;
+  container-type: size;
+  height: max(calc(100svh - 4rem), 44rem);
+  background: #a9a59f;
+  color: var(--text); /* data-theme="light" on the section: ink type on the photo in both themes */
+}
+@media (min-width: 768px) {
+  .hero {
+    --ar: 16 / 9;
+    --hz: 0.754;
+    --vx: 0.78;
+    --vh: 0.46;
+    --cx: 0.75;
+    height: max(calc(100dvh - 4rem), 40rem);
+  }
+}
+.hero-frame {
+  --fw: max(100cqw, 100cqh * var(--ar));
+  position: absolute;
+  bottom: 0;
+  left: calc((100cqw - var(--fw)) * var(--cx));
+  width: var(--fw);
+  aspect-ratio: var(--ar);
+  pointer-events: none;
+  transform-origin: calc(var(--vx) * 100%) calc(var(--hz) * 100%);
+  translate: calc(var(--mx) * var(--depth)) calc(var(--p) * 32cqh);
+  will-change: transform;
+}
+.hero-back {
+  --depth: -6px;
+  z-index: -1;
+  scale: calc(1 + var(--p) * 0.06);
+}
+.hero-mid {
+  --depth: -16px;
+  z-index: 1;
+  scale: calc(1 + var(--p) * 0.22);
+}
+.hero-img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.hero-monument {
+  position: absolute;
+  left: calc(var(--vx) * 100%);
+  bottom: calc((1 - var(--hz)) * 100% - 0.4%);
+  width: auto;
+  height: calc(var(--vh) * 100%);
+  translate: -50% 0;
+  animation: monument-in 1.4s var(--ease-expo) both;
+  animation-delay: calc(var(--intro-delay) + 0.15s);
+}
+.hero-ledge {
+  position: absolute;
+  inset: auto 0 0;
+  z-index: 2;
+  height: clamp(3.5rem, 11cqh, 9rem);
+  pointer-events: none;
+  translate: calc(var(--mx) * -28px) 0;
+  scale: 1.06; /* room for the pointer shift */
+  animation: ledge-in 1.2s var(--ease-expo) both;
+  animation-delay: calc(var(--intro-delay) + 0.1s);
+}
+.hero-copy {
+  padding-top: 2.5rem;
+  translate: 0 calc(var(--p) * 18cqh);
+  opacity: calc(1 - var(--p) * 1.6);
+}
+@media (min-width: 768px) {
+  .hero-copy {
+    padding-top: clamp(3rem, 10cqh, 7rem);
+  }
+}
+@media (max-width: 767px) {
+  .hero-title {
+    font-size: 2.5rem;
+  }
+}
+@keyframes monument-in {
+  from {
+    opacity: 0;
+    transform: translateY(4%);
+  }
+}
+@keyframes ledge-in {
+  from {
+    transform: translateY(40%);
+  }
+}
+
+/* ---- Home peak: "The seam" (DESIGN.md §6) ----
+   --p runs 0 → 1 across the pinned travel. Each phase is a clamp() window over --p:
+   --w camera push into the wide shot, --c close shot fades in, --l the Ember line draws down the seam,
+   --b it splits into three, --t the chapter heading lands. --ly / --by: where the line ends and where
+   the branches end, as fractions of the stage height. */
+.seam {
+  --p: 0;
+  height: 300svh;
+}
+@media (min-width: 768px) {
+  .seam {
+    height: 340svh;
+  }
+}
+.seam-stage {
+  --w: clamp(0, var(--p) / 0.55, 1);
+  --c: clamp(0, (var(--p) - 0.3) / 0.25, 1);
+  --l: clamp(0, (var(--p) - 0.5) / 0.2, 1);
+  --b: clamp(0, (var(--p) - 0.68) / 0.14, 1);
+  --t: clamp(0, (var(--p) - 0.78) / 0.12, 1);
+  --ly: 0.3;
+  --by: 0.43;
+  container-type: size;
+  height: 100svh;
+  background: var(--ink);
+  color: var(--text);
+}
+@media (min-width: 768px) {
+  .seam-stage {
+    --ly: 0.62;
+    --by: 0.84;
+  }
+}
+/* Wide shot (3:2): covers the stage with the seam point (49.7%, 70%) near the centre, then scales
+   around that point, so the camera walks straight into the gap. */
+.seam-wide {
+  --W: max(100cqw, 100cqh * 1.5);
+  --H: calc(var(--W) / 1.5);
+  position: absolute;
+  max-width: none;
+  width: var(--W);
+  height: var(--H);
+  left: clamp(100cqw - var(--W), 50cqw - var(--W) * 0.497, 0px);
+  top: clamp(100cqh - var(--H), 55cqh - var(--H) * 0.7, 0px);
+  transform-origin: 49.7% 70%;
+  scale: calc(1 + 5 * var(--w) * var(--w));
+  will-change: transform;
+}
+/* Close shot (6:5): the lit seam runs top to bottom at 49.7%, kept on the stage's centre line. */
+.seam-close {
+  --W: max(100cqw, 100cqh * 1.2);
+  --H: calc(var(--W) / 1.2);
+  position: absolute;
+  max-width: none;
+  width: var(--W);
+  height: var(--H);
+  left: clamp(100cqw - var(--W), 50cqw - var(--W) * 0.497, 0px);
+  top: calc((100cqh - var(--H)) / 2);
+  transform-origin: 49.7% 50%;
+  opacity: var(--c);
+  scale: calc(1.08 - 0.08 * var(--c)); /* settles as it lands, always covering */
+  will-change: transform, opacity;
+}
+/* Dims the close shot until the line is drawn, then lifts: the seam reads as switching on. */
+.seam-shade {
+  position: absolute;
+  inset: 0;
+  background: var(--ink);
+  opacity: calc(var(--c) * (0.62 - 0.42 * var(--l)));
+}
+.seam-line {
+  position: absolute;
+  top: 0;
+  left: calc(50% - 1px);
+  width: 2px;
+  height: calc(var(--ly) * 100%);
+  background: var(--ember);
+  transform-origin: top;
+  scale: 1 var(--l);
+}
+.seam-branches {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  top: calc(var(--ly) * 100%);
+  height: calc((var(--by) - var(--ly)) * 100%);
+  overflow: visible;
+  clip-path: inset(0 0 calc((1 - var(--b)) * 100%) 0);
+}
+.seam-labels {
+  position: absolute;
+  z-index: 1; /* above the heading's scrim on short phones */
+  inset: auto 0;
+  top: calc(var(--by) * 100% + 0.75rem);
+  opacity: var(--t);
+  translate: 0 calc((1 - var(--t)) * 12px);
+}
+.seam-labels li {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  translate: -50% 0;
+  white-space: nowrap;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--ink) 72%, transparent);
+  padding: 0.375rem 0.75rem;
+}
+.seam-labels li:nth-child(1) {
+  left: 20%;
+}
+.seam-labels li:nth-child(2) {
+  left: 50%;
+}
+.seam-labels li:nth-child(3) {
+  left: 80%;
+}
+/* Arabic reads the three branches right to left: Web on the right. */
+[dir="rtl"] .seam-labels li:nth-child(1) {
+  left: 80%;
+}
+[dir="rtl"] .seam-labels li:nth-child(3) {
+  left: 20%;
+}
+@media (max-width: 767px) {
+  .seam-labels li {
+    gap: 0.375rem;
+    padding: 0.3rem 0.5rem;
+    letter-spacing: 0.08em;
+  }
+}
+/* Heading: bottom band on phones (under the labels), top-left on desktop, each on its own scrim. */
+.seam-copy {
+  position: absolute;
+  inset: auto 0 0;
+  padding-block: 2rem 2.5rem;
+  opacity: var(--t);
+  translate: 0 calc((1 - var(--t)) * 24px);
+}
+.seam-copy::before {
+  content: "";
+  position: absolute;
+  inset: -3rem 0 0;
+  z-index: -1;
+  background: linear-gradient(to bottom, transparent, color-mix(in srgb, var(--ink) 88%, transparent) 3rem);
+}
+.seam-copy h2 {
+  font-size: clamp(1.875rem, 4.5vw, 4rem);
+}
+@media (min-width: 768px) {
+  .seam-copy {
+    inset: 0 0 auto;
+    padding-block: clamp(4rem, 12cqh, 8rem) 0;
+  }
+  .seam-copy::before {
+    inset: 0 0 -10rem;
+    background: linear-gradient(to right, color-mix(in srgb, var(--ink) 82%, transparent) 25%, transparent 55%);
+    -webkit-mask-image: linear-gradient(to bottom, black 60%, transparent);
+    mask-image: linear-gradient(to bottom, black 60%, transparent);
+  }
+  /* Arabic heading sits on the right: the scrim follows it. */
+  [dir="rtl"] .seam-copy::before {
+    background: linear-gradient(to left, color-mix(in srgb, var(--ink) 82%, transparent) 25%, transparent 55%);
+  }
+}
+
+/* Arabic: the copy runs from the right, so the photo is mirrored to put the V on the left. The scene
+   flips as a whole (geometry above stays valid) and the copy flips back. TR/EN are untouched. */
+[dir="rtl"] .hero,
+[dir="rtl"] .hero-copy {
+  scale: -1 1;
+}
+
+/* ---- Home close (DESIGN.md §5): the monument at night. --p runs while it scrolls into view and the
+   photo settles from 1.08 to 1. On phones the photo sits under the copy; --sky continues its sky. ---- */
+.close {
+  --p: 1;
+  --sky: #111b29;
+  min-height: 100svh;
+  display: flex;
+  align-items: flex-start;
+  background: var(--sky);
+  color: var(--text);
+}
+.close-img {
+  position: absolute;
+  z-index: -1;
+  max-width: none;
+  bottom: 0;
+  left: 50%;
+  width: 200%;
+  height: auto;
+  translate: -62% 0;
+  transform-origin: 74% 100%;
+  scale: calc(1.08 - 0.08 * var(--p));
+  -webkit-mask-image: linear-gradient(to bottom, transparent, black 25%);
+  mask-image: linear-gradient(to bottom, transparent, black 25%);
+}
+.close-copy {
+  padding-block: clamp(5rem, 12vw, 10rem) 2rem;
+}
+[dir="rtl"] .close,
+[dir="rtl"] .close-copy {
+  scale: -1 1;
+}
+@media (min-width: 768px) {
+  .close {
+    align-items: center;
+  }
+  .close-img {
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    translate: none;
+    object-fit: cover;
+    object-position: 70% 50%;
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+}
+
+@keyframes draw {
+  from {
+    stroke-dashoffset: 1;
+  }
+}
+@keyframes slide-in {
+  from {
+    transform: scaleX(0);
+  }
+}
+
+/* ---- Blueprint statement: the system architecture assembles once in view (BlueprintStage) ----
+   The resting state is the final drawing; keyframes stay paused until data-in, so reduced motion
+   (animation: none) shows the V fully drawn. */
+.arch [pathLength] {
+  stroke-dasharray: 1;
+}
+.arch:not([data-in]) * {
+  animation-play-state: paused;
+}
+.arch-construct {
+  animation: draw 0.6s var(--ease-expo) both;
+  animation-delay: var(--d, 0s);
+}
+.arch-facet {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: facet-in 0.6s var(--ease-expo) both;
+  animation-delay: calc(0.35s + var(--d, 0s));
+}
+.arch-edge {
+  animation: draw 0.5s var(--ease-expo) both;
+  animation-delay: 0.75s;
+}
+.arch-underline {
+  transform-box: fill-box;
+  transform-origin: left center;
+  animation: slide-in 0.4s var(--ease-expo) both;
+  animation-delay: 1s;
+}
+.arch-path {
+  animation: draw 1.1s var(--ease-expo) both;
+  animation-delay: calc(0.5s + var(--d, 0s));
+}
+.arch-node {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: node-in 0.6s var(--ease-expo) both;
+  animation-delay: calc(0.8s + var(--d, 0s));
+}
+.arch-label {
+  transform: scale(var(--lk, 1));
+}
+.arch-packets {
+  animation: fade-in 0.6s linear both;
+  animation-delay: 1.6s;
+}
+@media (max-width: 767px) {
+  .arch-desk {
+    display: none;
+  }
+}
+@keyframes facet-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+}
+@keyframes node-in {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+}
+
+/* ---- Brand intro, first visit only (DESIGN.md §6, effect 1) ----
+   The head script sets html[data-intro="on"] once per session; everything else never sees the curtain. */
+.intro {
+  display: none;
+}
+html[data-intro="on"] {
+  --intro-delay: 0.85s;
+}
+html[data-intro="on"] .intro {
+  display: grid;
+  animation: curtain-up 0.45s var(--ease-expo) 0.75s both;
+}
+.intro-stroke {
+  stroke-dasharray: 1;
+  animation: draw 0.45s var(--ease-expo) both;
+}
+.intro-stroke + .intro-stroke {
+  animation-delay: 0.12s;
+}
+.intro-underline {
+  transform-box: fill-box;
+  transform-origin: left center;
+  animation: slide-in 0.3s var(--ease-expo) 0.4s both;
+}
+@keyframes curtain-up {
+  to {
+    transform: translateY(-100%);
+    visibility: hidden;
+  }
+}
+
+/* ---- Mini flow on capability panels: a packet runs each segment in turn ---- */
+.mf-run {
+  animation: mf-y 2.4s linear infinite;
+}
+.mf-run[data-seg="1"] {
+  animation-delay: 1.2s;
+}
+@container (min-width: 26rem) {
+  .mf-run {
+    animation-name: mf-x;
+  }
+  [dir="rtl"] .mf-run {
+    animation-name: mf-x-rtl;
+  }
+}
+[data-running="false"] .mf-run {
+  animation-play-state: paused;
+}
+@keyframes mf-x {
+  0% {
+    transform: translateX(0);
+    opacity: 0;
+  }
+  6%,
+  44% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+@keyframes mf-x-rtl {
+  0% {
+    transform: translateX(0);
+    opacity: 0;
+  }
+  6%,
+  44% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+}
+@keyframes mf-y {
+  0% {
+    transform: translateY(0);
+    opacity: 0;
+  }
+  6%,
+  44% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+}
+
+/* ---- View transitions (vercel-react-view-transitions recipes) ---- */
+:root {
+  --duration-exit: 150ms;
+  --duration-enter: 210ms;
+  --duration-move: 400ms;
+}
+@keyframes vt-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes vt-slide {
+  from {
+    translate: var(--slide-offset);
+  }
+  to {
+    translate: 0;
+  }
+}
+
+/* Lateral navigation (header links): crossfade. */
+::view-transition-old(.fade-out) {
+  animation: var(--duration-exit) ease-in vt-fade reverse both;
+}
+::view-transition-new(.fade-in) {
+  animation: var(--duration-enter) ease-out var(--duration-exit) both vt-fade;
+}
+
+/* Hierarchical navigation (list → detail and back) + /start steps (ordered). */
+::view-transition-old(.nav-forward) {
+  --slide-offset: -60px;
+  animation:
+    var(--duration-exit) ease-in both vt-fade reverse,
+    var(--duration-move) var(--ease-expo) both vt-slide reverse;
+}
+::view-transition-new(.nav-forward) {
+  --slide-offset: 60px;
+  animation:
+    var(--duration-enter) ease-out var(--duration-exit) both vt-fade,
+    var(--duration-move) var(--ease-expo) both vt-slide;
+}
+::view-transition-old(.nav-back) {
+  --slide-offset: 60px;
+  animation:
+    var(--duration-exit) ease-in both vt-fade reverse,
+    var(--duration-move) var(--ease-expo) both vt-slide reverse;
+}
+::view-transition-new(.nav-back) {
+  --slide-offset: -60px;
+  animation:
+    var(--duration-enter) ease-out var(--duration-exit) both vt-fade,
+    var(--duration-move) var(--ease-expo) both vt-slide;
+}
+
+/* Work tile → case study hero (DESIGN.md §6, effect 10). */
+::view-transition-group(.morph) {
+  animation-duration: var(--duration-move);
+  animation-timing-function: var(--ease-expo);
+}
+::view-transition-image-pair(.morph) {
+  animation-name: via-blur;
+}
+@keyframes via-blur {
+  30% {
+    filter: blur(3px);
+  }
+}
+
+/* Capability panel title → capability page title: text stays sharp. */
+::view-transition-group(.text-morph) {
+  animation-duration: var(--duration-move);
+  animation-timing-function: var(--ease-expo);
+}
+::view-transition-old(.text-morph) {
+  display: none;
+}
+::view-transition-new(.text-morph) {
+  animation: none;
+  object-fit: none;
+  object-position: left top;
+}
+
+/* Persistent header never slides with the page. */
+::view-transition-group(site-header) {
+  animation: none;
+  z-index: 100;
+}
+
+/* Theme switch circular reveal (DESIGN.md §6, effect 9). JS drives the clip-path. */
+html[data-vt="theme"]::view-transition-old(root),
+html[data-vt="theme"]::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+/* ---- System map (Home 6): connector between two steps fills once the next step is lit ---- */
+.sm-fill {
+  transform: scaleY(0);
+  transform-origin: top;
+  transition: transform var(--dur-element) var(--ease-expo);
+}
+@media (min-width: 48rem) {
+  .sm-fill {
+    transform: scaleX(0);
+    transform-origin: left;
+  }
+  [dir="rtl"] .sm-fill {
+    transform-origin: right;
+  }
+}
+.sm-fill[data-on="true"] {
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(*),
+  ::view-transition-new(*),
+  ::view-transition-group(*) {
+    animation-duration: 0s !important;
+    animation-delay: 0s !important;
+  }
+  /* Scroll-linked styles (ScrollWords, Parallax, Approach line) settle at their end state. Needs !important:
+     the inline style comes from the server render and is never corrected on hydration. */
+  .rm-static {
+    transform: none !important;
+    opacity: 1 !important;
+  }
+  .line-mask > span > span,
+  .rise {
+    animation: fade-in 200ms linear both;
+  }
+  .mf-run {
+    animation: none !important;
+    opacity: 0;
+  }
+  /* System map: no auto-play, so every step is shown lit. */
+  .sm-fill {
+    transform: none !important;
+  }
+  .sm-dot {
+    border-color: var(--accent) !important;
+    background-color: var(--accent) !important;
+  }
+  .sm-text {
+    opacity: 1 !important;
+  }
+  .arch * {
+    animation: none !important;
+  }
+  .arch-packets {
+    opacity: 0;
+  }
+  /* Scenes: the hero holds its opening frame, the seam shows its final frame with no pin, the close is settled. */
+  .hero {
+    --p: 0 !important;
+    --mx: 0 !important;
+  }
+  .hero-monument,
+  .hero-ledge {
+    animation: fade-in 200ms linear both;
+  }
+  .seam {
+    --p: 1 !important;
+    height: auto;
+  }
+  .seam-stage {
+    position: relative;
+  }
+  .close {
+    --p: 1 !important;
+  }
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+  }
+}

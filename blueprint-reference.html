@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Blueprint Hero Reference</title>
+<style>
+body{margin:0;font-family:system-ui,sans-serif}
+#vh{position:relative;height:100dvh;overflow:hidden;background:#DFD6C2;color:#0B0C10}
+#vh.dk{background:#0B0C10;color:#DFD6C2}
+#vh canvas{position:absolute;inset:0;width:100%;height:100%}
+.vtx{position:absolute;left:6vw;top:0;bottom:0;width:44%;display:flex;flex-direction:column;justify-content:center;z-index:2}
+.lbl{font-family:monospace;font-size:12px;letter-spacing:.14em;opacity:.64}
+.ln{overflow:hidden}.ln span{display:block;transform:translateY(110%);transition:transform .9s cubic-bezier(.22,1,.36,1)}
+.go .ln span{transform:none}
+.cta{margin-top:24px;align-self:flex-start;background:#D97D54;color:#0B0C10;border-radius:999px;padding:14px 24px;font-size:15px;font-weight:500;border:none}
+.tg{position:absolute;right:20px;top:20px;z-index:3}
+#vs{position:absolute;right:0;top:0;width:54%;height:100%;z-index:2}
+.fc{transition:opacity .6s ease,transform .6s cubic-bezier(.22,1,.36,1)}
+</style>
+</head>
+<body>
+<!-- REFERENCE PROTOTYPE ONLY. Shows the intended concept and motion feel.
+     Rebuild properly in the Next.js project per design.md; do not copy this file in. -->
+<div id="vh">
+<canvas id="cv"></canvas>
+<button class="tg" id="tg">Light / dark</button>
+<div class="vtx" id="tx">
+<div class="lbl">VERL SYSTEMS · WEB · AUTOMATION · AI</div>
+<div style="font-size:clamp(2.5rem,5vw,4.5rem);font-weight:500;line-height:1.05;letter-spacing:-.03em;margin-top:16px">
+<div class="ln"><span>We build the systems</span></div>
+<div class="ln"><span style="transition-delay:.08s">your business</span></div>
+<div class="ln"><span style="transition-delay:.16s">runs on.</span></div></div>
+<div style="font-size:17px;opacity:.64;margin-top:16px;max-width:420px">Websites, automation and AI, designed, engineered and supported by one accountable studio.</div>
+<button class="cta">Start a project &rarr;</button>
+</div>
+<svg id="vs" viewBox="0 0 400 420">
+<g id="tilt" style="transform-origin:200px 200px;transition:transform .5s cubic-bezier(.22,1,.36,1)">
+<g id="paths" fill="none" stroke="currentColor" stroke-opacity=".22" stroke-width="1.2"></g>
+<g id="pk"></g>
+<g transform="translate(96 108) scale(.52)" id="vm">
+<polygon class="fc f" points="40,40 150,40 110,85" fill="#1F2833"/>
+<polygon class="fc f" points="40,40 110,85 196,330" fill="#0B0C10"/>
+<polygon class="fc f" points="110,85 150,40 196,250 196,330" fill="#2a3440"/>
+<polygon class="fc f" points="360,40 250,40 290,85" fill="#1F2833"/>
+<polygon class="fc f" points="360,40 290,85 204,330" fill="#0B0C10"/>
+<polygon class="fc f" points="290,85 250,40 204,250 204,330" fill="#2a3440"/>
+<line x1="110" y1="85" x2="196" y2="320" stroke="#D97D54" stroke-width="3"/>
+<line x1="290" y1="85" x2="204" y2="320" stroke="#D97D54" stroke-width="3"/>
+<rect x="150" y="368" width="100" height="6" fill="#D97D54" class="fc f"/>
+</g>
+<g id="nodes"></g>
+</g></svg>
+</div>
+<script>
+const H=document.getElementById('vh'),C=document.getElementById('cv'),x=C.getContext('2d');
+let W,Hh,d=Math.min(devicePixelRatio||1,2);
+function rs(){W=H.clientWidth;Hh=H.clientHeight;C.width=W*d;C.height=Hh*d;x.setTransform(d,0,0,d,0,0)}
+rs();addEventListener('resize',rs);
+let m={x:W*.6,y:Hh*.4},t={...m},last=0,ins=false;
+H.addEventListener('pointermove',e=>{const r=H.getBoundingClientRect();t.x=e.clientX-r.left;t.y=e.clientY-r.top;last=performance.now();ins=true});
+H.addEventListener('pointerleave',()=>ins=false);
+const N=[['WEB',70,70],['AI',330,70],['AUTOMATION',350,300],['CRM',50,300],['DATA',200,390]],cx=200,cy=200;
+const P=document.getElementById('paths'),ND=document.getElementById('nodes'),PK=document.getElementById('pk'),ns='http://www.w3.org/2000/svg';
+const ed=[[0,1],[1,2],[2,4],[4,3],[3,0],[0,2],[1,3]];
+ed.forEach(([a,b],i)=>{const p=document.createElementNS(ns,'path');p.setAttribute('d',`M${N[a][1]} ${N[a][2]} Q${cx} ${cy} ${N[b][1]} ${N[b][2]}`);p.style.strokeDasharray=600;p.style.strokeDashoffset=600;p.style.transition=`stroke-dashoffset 1.2s cubic-bezier(.22,1,.36,1) ${.5+i*.08}s`;P.appendChild(p)});
+N.forEach(([l,nx,ny],i)=>{const g=document.createElementNS(ns,'g');g.setAttribute('class','fc');g.style.opacity=0;g.style.transform=`translate(${nx}px,${ny}px) scale(.9)`;g.style.transitionDelay=(.9+i*.08)+'s';const w=l.length*7.2+20;g.innerHTML=`<rect x="${-w/2}" y="-13" width="${w}" height="26" rx="13" fill="none" stroke="currentColor" stroke-opacity=".3"/><circle cx="${-w/2+10}" cy="0" r="3" fill="#D97D54"/><text x="5" y="4" text-anchor="middle" font-size="11" font-family="monospace" fill="currentColor" letter-spacing="1">${l}</text>`;ND.appendChild(g)});
+const pks=ed.map((e,i)=>{const c=document.createElementNS(ns,'circle');c.setAttribute('r',3.2);c.setAttribute('fill','#D97D54');c.style.opacity=0;PK.appendChild(c);return{p:P.children[i],o:i/ed.length,s:.0016+i*.0002}});
+document.querySelectorAll('#vm .f').forEach((f,i)=>{f.style.opacity=0;f.style.transform='translateY(8px)';f.style.transitionDelay=(.2+i*.06)+'s'});
+requestAnimationFrame(()=>requestAnimationFrame(()=>{document.getElementById('tx').classList.add('go');[...P.children].forEach(p=>p.style.strokeDashoffset=0);ND.querySelectorAll('g').forEach(g=>{g.style.opacity=1;g.style.transform=g.style.transform.replace('scale(.9)','scale(1)')});document.querySelectorAll('#vm .f').forEach(f=>{f.style.opacity=1;f.style.transform='none'})}));
+const tl=document.getElementById('tilt'),VS=document.getElementById('vs');
+document.getElementById('tg').onclick=()=>H.classList.toggle('dk');
+function fr(n){
+ if(!ins||n-last>1500){t.x=W*(.55+.3*Math.sin(n/2300));t.y=Hh*(.5+.35*Math.sin(n/1700+1))}
+ m.x+=(t.x-m.x)*.08;m.y+=(t.y-m.y)*.08;
+ const dk=H.classList.contains('dk'),ln=dk?'223,214,194':'11,12,16';x.clearRect(0,0,W,Hh);
+ const s=40,R=200;
+ for(let gx=0;gx<=W;gx+=s){x.strokeStyle=`rgba(${ln},${gx%(s*4)?.05:.09})`;x.beginPath();x.moveTo(gx+.5,0);x.lineTo(gx+.5,Hh);x.stroke()}
+ for(let gy=0;gy<=Hh;gy+=s){x.strokeStyle=`rgba(${ln},${gy%(s*4)?.05:.09})`;x.beginPath();x.moveTo(0,gy+.5);x.lineTo(W,gy+.5);x.stroke()}
+ for(let gx=0;gx<=W;gx+=s)for(let gy=0;gy<=Hh;gy+=s){const dx=m.x-gx,dy=m.y-gy,dd=Math.hypot(dx,dy);if(dd<R){const k=1-dd/R,px=gx+dx*k*.06,py=gy+dy*k*.06;x.fillStyle=`rgba(217,125,84,${k*.9})`;x.fillRect(px-1.5,py-1.5,3,3);x.strokeStyle=`rgba(${ln},${k*.35})`;x.beginPath();x.moveTo(px-6,py);x.lineTo(px+6,py);x.moveTo(px,py-6);x.lineTo(px,py+6);x.stroke()}}
+ const vr=VS.getBoundingClientRect(),hr=H.getBoundingClientRect(),rx=((m.y-(vr.top-hr.top))/vr.height-.5)*-6,ry=((m.x-(vr.left-hr.left))/vr.width-.5)*6;
+ tl.style.transform=`perspective(800px) rotateX(${Math.max(-4,Math.min(4,rx))}deg) rotateY(${Math.max(-4,Math.min(4,ry))}deg)`;
+ if(n>1800)pks.forEach((k,i)=>{const L=k.p.getTotalLength(),pt=k.p.getPointAtLength(((n*k.s+k.o)%1)*L),c=PK.children[i];c.setAttribute('cx',pt.x);c.setAttribute('cy',pt.y);c.style.opacity=1});
+ requestAnimationFrame(fr)}
+requestAnimationFrame(fr);
+</script>
+</body>
+</html>
