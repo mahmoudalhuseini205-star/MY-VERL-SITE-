@@ -262,7 +262,7 @@ export function StartBrief({ t }: { t: T }) {
                 className="group inline-flex min-h-12 items-center gap-3 rounded-full bg-text px-6 py-3.5 font-medium text-bg transition-[opacity,transform] duration-(--dur-micro) ease-expo active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-30"
               >
                 {t.next}
-                <span aria-hidden className="transition-transform duration-(--dur-micro) ease-expo group-hover:translate-x-1 rtl:-scale-x-100 rtl:group-hover:-translate-x-1">
+                <span aria-hidden className="transition-transform duration-(--dur-micro) ease-expo group-hover:translate-x-1 group-active:translate-x-1 rtl:-scale-x-100 rtl:group-hover:-translate-x-1 rtl:group-active:-translate-x-1">
                   →
                 </span>
               </button>

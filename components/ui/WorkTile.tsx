@@ -21,7 +21,7 @@ export function WorkTile({ study, locale, className = "" }: { study: CaseStudy; 
       <div className="relative overflow-hidden rounded-3xl border border-border">
         <Parallax>
           <ViewTransition name={`work-${study.slug}`} share="morph" default="none">
-            <div className="transition-transform duration-900 ease-expo group-hover:scale-[1.03]">
+            <div className="transition-transform duration-900 ease-expo group-hover:scale-[1.03] group-active:scale-[1.03]">
               <WorkImage image={study.cover} locale={locale} sizes="(min-width: 768px) 60vw, 100vw" />
             </div>
           </ViewTransition>
@@ -45,7 +45,7 @@ export function WorkTile({ study, locale, className = "" }: { study: CaseStudy; 
         </div>
         <span
           aria-hidden
-          className="grid size-11 shrink-0 place-items-center rounded-full border border-border transition-transform duration-(--dur-element) ease-expo group-hover:-rotate-45 rtl:group-hover:rotate-45"
+          className="grid size-11 shrink-0 place-items-center rounded-full border border-border transition-transform duration-(--dur-element) ease-expo group-hover:-rotate-45 group-active:-rotate-45 rtl:group-hover:rotate-45 rtl:group-active:rotate-45"
         >
           <svg width="14" height="14" viewBox="0 0 12 12" fill="none" className="rtl:-scale-x-100">
             <path d="M1 6h9.5M6.5 2l4 4-4 4" stroke="currentColor" strokeWidth="1.5" />

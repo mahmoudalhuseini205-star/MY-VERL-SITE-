@@ -21,7 +21,7 @@ export function Button({ variant = "primary", className = "", children, href, ..
       {variant === "primary" && (
         <span
           aria-hidden
-          className="-me-3 grid size-7 place-items-center rounded-full bg-on-accent text-accent transition-transform duration-(--dur-micro) ease-expo group-hover:translate-x-1 rtl:-scale-x-100 rtl:group-hover:-translate-x-1"
+          className="-me-3 grid size-7 place-items-center rounded-full bg-on-accent text-accent transition-transform duration-(--dur-micro) ease-expo group-hover:translate-x-1 group-active:translate-x-1 rtl:-scale-x-100 rtl:group-hover:-translate-x-1 rtl:group-active:-translate-x-1"
         >
           <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
             <path d="M1 6h9.5M6.5 2l4 4-4 4" stroke="currentColor" strokeWidth="1.5" />

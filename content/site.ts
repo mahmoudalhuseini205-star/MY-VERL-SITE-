@@ -12,8 +12,8 @@ export const whatsappUrl = (text: string) => `https://wa.me/${WHATSAPP_NUMBER}?t
 // Founder portrait for /company and the Home company section. Shows a blueprint placeholder until the file exists.
 export const FOUNDER_PORTRAIT = {
   src: "/company/mahmud.jpg",
-  width: 1024,
-  height: 1024,
+  width: 1600,
+  height: 1600,
   alt: {
     tr: "VERL Systems kurucusu Mahmud",
     en: "Mahmud, founder of VERL Systems",

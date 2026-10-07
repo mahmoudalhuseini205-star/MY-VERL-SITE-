@@ -30,7 +30,7 @@ const S = 0.36; // V scale inside it
 const VX = (VB - V_W * S) / 2;
 const VY = 112;
 const C: [number, number] = [VB / 2, 250]; // every path bends through the V
-// WEB, AI, AUTOMATION, CRM, DATA. The last two are desktop only.
+// WEB, AI, AUTOMATION, CRM, DATA.
 const POS: [number, number][] = [
   [80, 56],
   [440, 56],
@@ -47,7 +47,6 @@ const LINKS: [number, number][] = [
   [3, 0],
   [1, 3],
 ];
-const desk = (...i: number[]) => (i.some((n) => n >= 3) ? "arch-desk" : "");
 const at = (d: number) => ({ "--d": `${d}s` }) as CSSProperties;
 const tone = {
   outer: "var(--v-outer)",
@@ -169,7 +168,7 @@ export function BlueprintStage({
     };
 
     const frame = (now: number) => {
-      // No mouse, idle for 1.5s, or touch: the spotlight drifts on a slow Lissajous path.
+      // Idle for 1.5s or never touched: the spotlight drifts on a slow Lissajous path.
       const idle = now - pointer.last > 1500;
       const tx = idle ? W * (0.55 + 0.3 * Math.sin(now / 2300)) : pointer.x;
       const ty = idle ? H * (0.5 + 0.35 * Math.sin(now / 1700 + 1)) : pointer.y;
@@ -186,9 +185,10 @@ export function BlueprintStage({
         shades.current[i]?.setAttribute("opacity", (lit * 0.32).toFixed(3));
       });
 
-      // Desktop mouse: the structure tilts toward the cursor, max 4°.
-      if (fine && W >= 768 && tilt.current) {
-        const c = (n: number) => Math.max(-4, Math.min(4, n));
+      // The structure tilts toward the spotlight: max 4° with a mouse, 3° on touch.
+      if (tilt.current) {
+        const m = fine ? 4 : 3;
+        const c = (n: number) => Math.max(-m, Math.min(m, n));
         tilt.current.style.transform = `perspective(900px) rotateX(${c((-dy / H) * 8)}deg) rotateY(${c((dx / W) * 8)}deg)`;
       }
 
@@ -206,8 +206,8 @@ export function BlueprintStage({
       raf = requestAnimationFrame(frame);
     };
 
+    // Mouse moves, or a finger taps/drags (scrolling stays native: passive listeners).
     const onMove = (e: PointerEvent) => {
-      if (e.pointerType !== "mouse") return;
       const r = el.getBoundingClientRect();
       pointer.x = e.clientX - r.left;
       pointer.y = e.clientY - r.top;
@@ -229,7 +229,8 @@ export function BlueprintStage({
     if (run) {
       spot.x = W * 0.6;
       spot.y = H * 0.5;
-      el.addEventListener("pointermove", onMove);
+      el.addEventListener("pointermove", onMove, { passive: true });
+      el.addEventListener("pointerdown", onMove, { passive: true });
       raf = requestAnimationFrame(frame);
     }
     return () => {
@@ -238,6 +239,7 @@ export function BlueprintStage({
       ro.disconnect();
       mo.disconnect();
       el.removeEventListener("pointermove", onMove);
+      el.removeEventListener("pointerdown", onMove);
     };
   }, [run]);
 
@@ -310,13 +312,13 @@ export function BlueprintStage({
                   }}
                   d={`M${POS[a][0]} ${POS[a][1]} Q${C[0]} ${C[1]} ${POS[b][0]} ${POS[b][1]}`}
                   pathLength={1}
-                  className={`arch-path ${desk(a, b)}`}
+                  className="arch-path"
                   style={at(i * 0.08)}
                 />
               ))}
             </g>
             <g className="arch-packets">
-              {LINKS.map(([a, b], i) => (
+              {LINKS.map(([a], i) => (
                 <circle
                   key={i}
                   ref={(n) => {
@@ -325,7 +327,7 @@ export function BlueprintStage({
                   r={3.2}
                   cx={POS[a][0]}
                   cy={POS[a][1]}
-                  className={`arch-packet fill-accent ${desk(a, b)}`}
+                  className="arch-packet fill-accent"
                 />
               ))}
             </g>
@@ -365,11 +367,12 @@ export function BlueprintStage({
             </g>
             {nodes.map((label, i) => {
               const w = label.length * 7.4 + 34;
+              // Long labels (Arabic AI) move inward so the pill, scaled up to ~1.5x on phones, stays on screen.
+              const x = Math.min(POS[i][0], VB + 12 - w * 0.75);
               return (
                 <g
                   key={label}
-                  transform={`translate(${POS[i][0]} ${POS[i][1]})`}
-                  className={desk(i)}
+                  transform={`translate(${x} ${POS[i][1]})`}
                 >
                   <g className="arch-label">
                     <g className="arch-node" style={at(i * 0.08)}>

@@ -72,7 +72,7 @@ export function MobileMenu({
         aria-expanded={open}
         aria-controls="mobile-menu"
         aria-label={open ? t.close : t.open}
-        className="relative z-[60] grid size-11 place-items-center rounded-full text-text"
+        className="relative z-[60] grid size-11 place-items-center rounded-full text-text transition-transform duration-(--dur-micro) ease-expo active:scale-90"
       >
         <span aria-hidden className="relative block h-3 w-5">
           <span
@@ -107,7 +107,7 @@ export function MobileMenu({
                         href={l.href}
                         aria-current={active ? "page" : undefined}
                         onClick={() => setOpen(false)}
-                        className="flex items-baseline gap-4 py-4"
+                        className="flex items-baseline gap-4 py-4 transition-opacity active:opacity-60"
                       >
                         <span className="t-label text-muted">{pad(i + 1)}</span>
                         <span className="block overflow-hidden pb-[0.08em]">
@@ -137,7 +137,7 @@ export function MobileMenu({
               <Link
                 href={start}
                 onClick={() => setOpen(false)}
-                className="group inline-flex min-h-12 items-center gap-3 self-start rounded-full bg-accent px-6 py-3.5 font-medium text-on-accent"
+                className="group inline-flex min-h-12 items-center gap-3 self-start rounded-full bg-accent px-6 py-3.5 font-medium text-on-accent transition-transform duration-(--dur-micro) ease-expo active:scale-[0.98]"
               >
                 {cta}
                 <span aria-hidden className="-me-3 grid size-7 place-items-center rounded-full bg-on-accent text-accent rtl:-scale-x-100">

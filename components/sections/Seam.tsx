@@ -20,8 +20,8 @@ export function Seam({
 }) {
   return (
     <SeamStage label={ID}>
-      <Image src="/home/seam-wide.webp" alt="" aria-hidden width={2560} height={1706} sizes="100vw" className="seam-wide" />
-      <Image src="/home/seam-close.webp" alt="" aria-hidden width={2400} height={2000} sizes="100vw" className="seam-close" />
+      <Image src="/home/seam-wide.webp" alt="" aria-hidden width={3840} height={2560} sizes="(max-aspect-ratio: 3/2) 150vh, 100vw" className="seam-wide" />
+      <Image src="/home/seam-close.webp" alt="" aria-hidden width={2400} height={2000} sizes="(max-aspect-ratio: 6/5) 120vh, 100vw" className="seam-close" />
       <div aria-hidden className="seam-shade" />
 
       <span aria-hidden className="seam-line" />
