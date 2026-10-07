@@ -973,3 +973,16 @@ html[data-vt="theme"]::view-transition-new(root) {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* Primary button on touch screens: a slow float so it reads as alive without a cursor (Magnetic.tsx).
+   Uses `translate`, so it stacks with the spring's transform and the press scale. */
+@media (hover: none) and (prefers-reduced-motion: no-preference) {
+  .float {
+    animation: float 3.2s ease-in-out infinite;
+  }
+}
+@keyframes float {
+  50% {
+    translate: 0 -5px;
+  }
+}
