@@ -9,7 +9,7 @@ const base =
 
 const variants = {
   primary: "bg-accent text-on-accent transition-transform",
-  secondary: "border border-border text-text transition-[transform,border-color] hover:border-text",
+  secondary: "float border border-border text-text transition-[transform,border-color] hover:border-text",
 };
 
 // Primary = the single Ember button per viewport (DESIGN.md §4), with a light magnetic pull. Internal hrefs use next/link.

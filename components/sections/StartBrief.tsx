@@ -22,7 +22,7 @@ function Chip({ selected, onClick, children }: { selected: boolean; onClick: () 
       type="button"
       aria-pressed={selected}
       onClick={onClick}
-      className={`flex min-h-14 items-center gap-4 rounded-2xl border px-5 py-3 text-start text-lg font-medium transition-[border-color,background-color,transform] duration-(--dur-micro) ease-expo active:scale-[0.98] ${selected ? "border-text bg-surface" : "border-border hover:border-text/40"}`}
+      className={`float flex min-h-14 items-center gap-4 rounded-2xl border px-5 py-3 text-start text-lg font-medium transition-[border-color,background-color,transform] duration-(--dur-micro) ease-expo active:scale-[0.98] ${selected ? "border-text bg-surface" : "border-border hover:border-text/40"}`}
     >
       <span
         aria-hidden
@@ -259,7 +259,7 @@ export function StartBrief({ t }: { t: T }) {
               <button
                 type="submit"
                 disabled={!valid[step]}
-                className="group inline-flex min-h-12 items-center gap-3 rounded-full bg-text px-6 py-3.5 font-medium text-bg transition-[opacity,transform] duration-(--dur-micro) ease-expo active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-30"
+                className="float group inline-flex min-h-12 items-center gap-3 rounded-full bg-text px-6 py-3.5 font-medium text-bg transition-[opacity,transform] duration-(--dur-micro) ease-expo active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-30"
               >
                 {t.next}
                 <span aria-hidden className="transition-transform duration-(--dur-micro) ease-expo group-hover:translate-x-1 group-active:translate-x-1 rtl:-scale-x-100 rtl:group-hover:-translate-x-1 rtl:group-active:-translate-x-1">

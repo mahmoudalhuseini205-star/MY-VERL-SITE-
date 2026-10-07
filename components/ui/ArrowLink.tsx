@@ -17,7 +17,7 @@ export function ArrowLink({
     <Link
       href={href}
       transitionTypes={back ? ["nav-back"] : undefined}
-      className={`group inline-flex min-h-11 items-center gap-4 text-accent-fg transition-opacity active:opacity-70 ${className}`}
+      className={`float group inline-flex min-h-11 items-center gap-4 text-accent-fg transition-opacity active:opacity-70 ${className}`}
     >
       {back && (
         <span aria-hidden className="inline-block transition-transform duration-(--dur-micro) ease-expo group-hover:-translate-x-1 group-active:-translate-x-1 rtl:-scale-x-100 rtl:group-hover:translate-x-1 rtl:group-active:translate-x-1">

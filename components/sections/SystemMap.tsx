@@ -62,7 +62,7 @@ export function SystemMap({
                 setStep(0);
                 setAuto(true);
               }}
-              className={`t-label min-h-11 rounded-full border px-4 py-2 transition-[color,border-color,background-color,transform] duration-(--dur-micro) ease-expo active:scale-[0.97] ${i === s ? "border-text bg-surface text-text" : "border-border text-muted hover:border-text/40 hover:text-text"}`}
+              className={`float t-label min-h-11 rounded-full border px-4 py-2 transition-[color,border-color,background-color,transform] duration-(--dur-micro) ease-expo active:scale-[0.97] ${i === s ? "border-text bg-surface text-text" : "border-border text-muted hover:border-text/40 hover:text-text"}`}
             >
               {sc.label}
             </button>
